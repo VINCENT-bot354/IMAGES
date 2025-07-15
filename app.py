@@ -5,6 +5,8 @@
 from flask import Flask, render_template_string, request, redirect
 import psycopg2
 import os
+import flask
+print("🔥 Running Flask version:", flask.__version__)
 
 app = Flask(__name__)
 
