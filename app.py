@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Connect to the database using environment variables (must be set in Render)
+# Connect to PostgreSQL using Render environment variables
 def get_connection():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME"),
@@ -14,7 +14,7 @@ def get_connection():
         port=os.getenv("DB_PORT")
     )
 
-# Create reviews table once
+# Create the reviews table (only once)
 @app.before_request
 def create_table_once():
     if not hasattr(app, 'db_initialized'):
@@ -33,7 +33,7 @@ def create_table_once():
         conn.close()
         app.db_initialized = True
 
-# Homepage
+# Home page: show reviews, average, and form
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -51,13 +51,18 @@ def index():
 
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT name, review, rating, created_at FROM reviews ORDER BY id DESC")
+    cur.execute("SELECT name, review, rating FROM reviews ORDER BY id DESC")
     reviews = cur.fetchall()
+
+    cur.execute("SELECT AVG(rating) FROM reviews")
+    avg_rating = cur.fetchone()[0]
+    avg_rating = round(avg_rating, 1) if avg_rating else 0
+
     conn.close()
 
-    return render_template_string(TEMPLATE, reviews=reviews)
+    return render_template_string(TEMPLATE, reviews=reviews, avg_rating=avg_rating)
 
-# Improved HTML template
+# Updated HTML Template with colors and average rating
 TEMPLATE = '''
 <!DOCTYPE html>
 <html>
@@ -65,83 +70,96 @@ TEMPLATE = '''
     <title>Customer Reviews</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             padding: 0;
             background: #f4f4f4;
         }
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 50px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+            color: #111;
         }
         h2 {
             text-align: center;
-            color: #333;
+            color: #111;
+            margin-bottom: 15px;
+        }
+        .avg-rating {
+            text-align: center;
+            font-size: 1.4em;
             margin-bottom: 30px;
+            color: #28a745;
         }
         .review {
-            border-bottom: 1px solid #ddd;
-            padding: 15px 0;
+            border-bottom: 1px solid #ccc;
+            padding: 20px 0;
         }
         .review strong {
-            color: #222;
-            font-size: 1.1em;
-        }
-        .review small {
-            color: #666;
+            font-size: 1.2em;
+            color: #000;
         }
         .stars {
             color: #f4b400;
-            font-size: 1.2em;
-            margin-top: 5px;
+            font-size: 1.3em;
+            margin-top: 8px;
         }
         form {
-            margin-top: 40px;
+            margin-top: 50px;
         }
         input[type="text"], textarea, select {
             width: 100%;
-            padding: 12px 15px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1em;
+            padding: 15px 18px;
+            margin-top: 12px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            border: 1px solid #bbb;
             box-sizing: border-box;
         }
         textarea {
-            height: 120px;
+            height: 140px;
             resize: vertical;
         }
-        button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin-top: 15px;
-            border-radius: 8px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        button:hover {
-            background: #218838;
-        }
         label {
-            font-weight: bold;
             display: block;
             margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        button {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            margin-top: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #28a745;
+        }
+        .note {
+            color: #dc3545;
+            font-size: 0.95em;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Customer Reviews</h2>
-        {% for name, review, rating, created_at in reviews %}
+        <div class="avg-rating">★ {{ avg_rating }} / 5 overall rating</div>
+
+        {% for name, review, rating in reviews %}
             <div class="review">
-                <strong>{{ name }}</strong> - <small>{{ created_at }}</small>
+                <strong>{{ name }}</strong>
                 <p>{{ review }}</p>
                 <div class="stars">
                     {% for i in range(rating) %}★{% endfor %}
@@ -153,7 +171,7 @@ TEMPLATE = '''
         <h2>Leave a Review</h2>
         <form method="POST">
             <label for="name">Your Name</label>
-            <input type="text" name="name" placeholder="e.g. John Doe" required>
+            <input type="text" name="name" placeholder="e.g. Jane Doe" required>
 
             <label for="review">Your Review</label>
             <textarea name="review" placeholder="Share your thoughts..." required></textarea>
@@ -168,6 +186,7 @@ TEMPLATE = '''
             </select>
 
             <button type="submit">Submit Review</button>
+            <div class="note">Your review helps us improve. Thank you!</div>
         </form>
     </div>
 </body>
