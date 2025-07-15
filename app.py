@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Connect to PostgreSQL using Render environment variables
+# Connect to PostgreSQL using environment variables
 def get_connection():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME"),
@@ -14,7 +14,7 @@ def get_connection():
         port=os.getenv("DB_PORT")
     )
 
-# Create the reviews table (only once)
+# Create reviews table (if not exists)
 @app.before_request
 def create_table_once():
     if not hasattr(app, 'db_initialized'):
@@ -33,7 +33,7 @@ def create_table_once():
         conn.close()
         app.db_initialized = True
 
-# Home page: show reviews, average, and form
+# Home page
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -62,7 +62,7 @@ def index():
 
     return render_template_string(TEMPLATE, reviews=reviews, avg_rating=avg_rating)
 
-# Updated HTML Template with colors and average rating
+# Inline HTML with background image
 TEMPLATE = '''
 <!DOCTYPE html>
 <html>
@@ -70,24 +70,23 @@ TEMPLATE = '''
     <title>Customer Reviews</title>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             padding: 0;
-            background: #f4f4f4;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('/static/The-Great-Wildebeest-Migration-750x450.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
         .container {
             max-width: 850px;
             margin: 50px auto;
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.93);
             padding: 40px;
             border-radius: 14px;
             box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-            color: #111;
         }
-        h2 {
+        h2, h3 {
             text-align: center;
             color: #111;
-            margin-bottom: 15px;
         }
         .avg-rating {
             text-align: center;
@@ -145,11 +144,6 @@ TEMPLATE = '''
         button:hover {
             background: #28a745;
         }
-        .note {
-            color: #dc3545;
-            font-size: 0.95em;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
@@ -168,7 +162,7 @@ TEMPLATE = '''
             </div>
         {% endfor %}
 
-        <h2>Leave a Review</h2>
+        <h3>Leave a Review</h3>
         <form method="POST">
             <label for="name">Your Name</label>
             <input type="text" name="name" placeholder="e.g. Jane Doe" required>
@@ -186,7 +180,6 @@ TEMPLATE = '''
             </select>
 
             <button type="submit">Submit Review</button>
-            <div class="note">Your review helps us improve. Thank you!</div>
         </form>
     </div>
 </body>
