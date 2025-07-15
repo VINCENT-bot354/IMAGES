@@ -5,8 +5,6 @@
 from flask import Flask, render_template_string, request, redirect
 import psycopg2
 import os
-import flask
-print("🔥 Running Flask version:", flask.__version__)
 
 app = Flask(__name__)
 
@@ -20,22 +18,24 @@ def get_connection():
         port=os.getenv("DB_PORT")
     )
 
-# Create reviews table if it doesn't exist (run this once)
-@app.before_first_request
-def create_table():
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS reviews (
-            id SERIAL PRIMARY KEY,
-            name TEXT NOT NULL,
-            review TEXT NOT NULL,
-            rating INTEGER CHECK(rating >= 1 AND rating <= 5),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-    """)
-    conn.commit()
-    conn.close()
+# Create reviews table once, safely using before_request
+@app.before_request
+def create_table_once():
+    if not hasattr(app, 'db_initialized'):
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS reviews (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                review TEXT NOT NULL,
+                rating INTEGER CHECK(rating >= 1 AND rating <= 5),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        conn.commit()
+        conn.close()
+        app.db_initialized = True
 
 # Home page: show all reviews and form at the bottom
 @app.route('/', methods=['GET', 'POST'])
@@ -81,8 +81,8 @@ TEMPLATE = '''
             <strong>{{ name }}</strong> - <small>{{ created_at }}</small>
             <p>{{ review }}</p>
             <div class="stars">
-                {% for i in range(rating) %}â˜…{% endfor %}
-                {% for i in range(5 - rating) %}â˜†{% endfor %}
+                {% for i in range(rating) %}★{% endfor %}
+                {% for i in range(5 - rating) %}☆{% endfor %}
             </div>
         </div>
     {% endfor %}
@@ -93,11 +93,11 @@ TEMPLATE = '''
         <textarea name="review" placeholder="Write your review here..." required></textarea>
         <label for="rating">Rating:</label>
         <select name="rating" required>
-            <option value="5">â˜…â˜…â˜…â˜…â˜…</option>
-            <option value="4">â˜…â˜…â˜…â˜…â˜†</option>
-            <option value="3">â˜…â˜…â˜…â˜†â˜†</option>
-            <option value="2">â˜…â˜…â˜†â˜†â˜†</option>
-            <option value="1">â˜…â˜†â˜†â˜†â˜†</option>
+            <option value="5">★★★★★</option>
+            <option value="4">★★★★☆</option>
+            <option value="3">★★★☆☆</option>
+            <option value="2">★★☆☆☆</option>
+            <option value="1">★☆☆☆☆</option>
         </select>
         <button type="submit">Submit Review</button>
     </form>
