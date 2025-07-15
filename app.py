@@ -14,7 +14,6 @@ def get_connection():
         port=os.getenv("DB_PORT")
     )
 
-# Create reviews table (if not exists)
 @app.before_request
 def create_table_once():
     if not hasattr(app, 'db_initialized'):
@@ -33,7 +32,6 @@ def create_table_once():
         conn.close()
         app.db_initialized = True
 
-# Home page
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -62,7 +60,7 @@ def index():
 
     return render_template_string(TEMPLATE, reviews=reviews, avg_rating=avg_rating)
 
-# Inline HTML with background image
+
 TEMPLATE = '''
 <!DOCTYPE html>
 <html>
@@ -70,96 +68,88 @@ TEMPLATE = '''
     <title>Customer Reviews</title>
     <style>
         body {
-        body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: url('/static/The-Great-Wildebeest-Migration-750x450.jpg') no-repeat center center fixed;
-    background-size: cover;
-}
-
-.container {
-    max-width: 850px;
-    margin: 50px auto;
-    background: transparent; /* No fill color */
-    padding: 40px;
-    border-radius: 14px;
-    border: 2px solid #ffffffaa; /* White border with slight transparency */
-    box-shadow: none;
-    color: #fff;
-}
-
-
-input[type="text"], textarea, select {
-    width: 100%;
-    padding: 15px 18px;
-    margin-top: 12px;
-    font-size: 1.1em;
-    border-radius: 10px;
-    border: 1px solid #bbb;
-    box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.1); /* translucent input fields */
-    color: #fff;
-}
-
-textarea {
-    height: 140px;
-    resize: vertical;
-}
-
-label {
-    display: block;
-    margin-top: 20px;
-    font-weight: bold;
-    color: #eee;
-}
-
-button {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 16px 30px;
-    margin-top: 25px;
-    font-size: 1.2em;
-    font-weight: bold;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: #218838;
-}
-
-.review {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 20px 0;
-}
-
-.review strong {
-    font-size: 1.2em;
-    color: #fff;
-}
-
-.stars {
-    color: #f4b400;
-    font-size: 1.3em;
-    margin-top: 8px;
-}
-
-.avg-rating {
-    text-align: center;
-    font-size: 1.4em;
-    margin-bottom: 30px;
-    color: #00ff99;
-}
-
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('/static/The-Great-Wildebeest-Migration-750x450.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            max-width: 850px;
+            margin: 60px auto;
+            padding: 40px;
+            border-radius: 14px;
+            border: 2px solid #ffffffcc; /* semi-white outline */
+            background: transparent; /* completely see-through */
+            color: #ffffff;
+        }
+        h2, h3 {
+            text-align: center;
+            color: #ffffff;
+        }
+        .avg-rating {
+            text-align: center;
+            font-size: 1.5em;
+            color: #00ff99; /* green */
+            margin-bottom: 30px;
+        }
+        .review {
+            border-bottom: 1px solid #ffffff33;
+            padding: 20px 0;
+            color: #fff;
+        }
+        .review strong {
+            font-size: 1.2em;
+            color: #ffffff;
+        }
+        .stars {
+            color: gold;
+            font-size: 1.3em;
+            margin-top: 8px;
+        }
+        form {
+            margin-top: 50px;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 15px 18px;
+            margin-top: 12px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            border: 1px solid #ffffff99;
+            background: transparent;
+            color: white;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #dddddd;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        button {
+            background: #000000cc;
+            color: white;
+            border: 1px solid #ffffff99;
+            padding: 16px 30px;
+            margin-top: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #28a745; /* green */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Customer Reviews</h2>
-        <div class="avg-rating">★ {{ avg_rating }} / 5 overall rating</div>
+        <div class="avg-rating">★ {{ avg_rating }} / 5 overall</div>
 
         {% for name, review, rating in reviews %}
             <div class="review">
@@ -178,7 +168,7 @@ button:hover {
             <input type="text" name="name" placeholder="e.g. Jane Doe" required>
 
             <label for="review">Your Review</label>
-            <textarea name="review" placeholder="Share your thoughts..." required></textarea>
+            <textarea name="review" placeholder="Write your feedback here..." required></textarea>
 
             <label for="rating">Rating</label>
             <select name="rating" required>
@@ -198,3 +188,4 @@ button:hover {
 
 if __name__ == '__main__':
     app.run(debug=True)
+        
