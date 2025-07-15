@@ -1,7 +1,3 @@
-# A simple Flask app that shows reviews (with rating) and allows users to add new ones
-# Database: PostgreSQL
-# Structure: Display reviews first, then the form at the bottom
-
 from flask import Flask, render_template_string, request, redirect
 import psycopg2
 import os
@@ -18,7 +14,7 @@ def get_connection():
         port=os.getenv("DB_PORT")
     )
 
-# Create reviews table once, safely using before_request
+# Create reviews table once
 @app.before_request
 def create_table_once():
     if not hasattr(app, 'db_initialized'):
@@ -37,7 +33,7 @@ def create_table_once():
         conn.close()
         app.db_initialized = True
 
-# Home page: show all reviews and form at the bottom
+# Homepage
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -61,46 +57,119 @@ def index():
 
     return render_template_string(TEMPLATE, reviews=reviews)
 
-# HTML template (inline)
+# Improved HTML template
 TEMPLATE = '''
 <!DOCTYPE html>
 <html>
 <head>
     <title>Customer Reviews</title>
     <style>
-        body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
-        .review { border-bottom: 1px solid #ccc; padding: 10px 0; }
-        .stars { color: gold; }
-        textarea, input, select { width: 100%; padding: 8px; margin: 5px 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .review {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+        .review strong {
+            color: #222;
+            font-size: 1.1em;
+        }
+        .review small {
+            color: #666;
+        }
+        .stars {
+            color: #f4b400;
+            font-size: 1.2em;
+            margin-top: 5px;
+        }
+        form {
+            margin-top: 40px;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #218838;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <h2>Customer Reviews</h2>
-    {% for name, review, rating, created_at in reviews %}
-        <div class="review">
-            <strong>{{ name }}</strong> - <small>{{ created_at }}</small>
-            <p>{{ review }}</p>
-            <div class="stars">
-                {% for i in range(rating) %}★{% endfor %}
-                {% for i in range(5 - rating) %}☆{% endfor %}
+    <div class="container">
+        <h2>Customer Reviews</h2>
+        {% for name, review, rating, created_at in reviews %}
+            <div class="review">
+                <strong>{{ name }}</strong> - <small>{{ created_at }}</small>
+                <p>{{ review }}</p>
+                <div class="stars">
+                    {% for i in range(rating) %}★{% endfor %}
+                    {% for i in range(5 - rating) %}☆{% endfor %}
+                </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
 
-    <h2>Leave a Review</h2>
-    <form method="POST">
-        <input type="text" name="name" placeholder="Your Name" required>
-        <textarea name="review" placeholder="Write your review here..." required></textarea>
-        <label for="rating">Rating:</label>
-        <select name="rating" required>
-            <option value="5">★★★★★</option>
-            <option value="4">★★★★☆</option>
-            <option value="3">★★★☆☆</option>
-            <option value="2">★★☆☆☆</option>
-            <option value="1">★☆☆☆☆</option>
-        </select>
-        <button type="submit">Submit Review</button>
-    </form>
+        <h2>Leave a Review</h2>
+        <form method="POST">
+            <label for="name">Your Name</label>
+            <input type="text" name="name" placeholder="e.g. John Doe" required>
+
+            <label for="review">Your Review</label>
+            <textarea name="review" placeholder="Share your thoughts..." required></textarea>
+
+            <label for="rating">Rating</label>
+            <select name="rating" required>
+                <option value="5">★★★★★ - Excellent</option>
+                <option value="4">★★★★☆ - Very Good</option>
+                <option value="3">★★★☆☆ - Average</option>
+                <option value="2">★★☆☆☆ - Poor</option>
+                <option value="1">★☆☆☆☆ - Terrible</option>
+            </select>
+
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
 </body>
 </html>
 '''
