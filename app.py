@@ -70,80 +70,88 @@ TEMPLATE = '''
     <title>Customer Reviews</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: url('/static/The-Great-Wildebeest-Migration-750x450.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        .container {
-            max-width: 850px;
-            margin: 50px auto;
-            background: rgba(255, 255, 255, 0.93);
-            padding: 40px;
-            border-radius: 14px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-        }
-        h2, h3 {
-            text-align: center;
-            color: #111;
-        }
-        .avg-rating {
-            text-align: center;
-            font-size: 1.4em;
-            margin-bottom: 30px;
-            color: #28a745;
-        }
-        .review {
-            border-bottom: 1px solid #ccc;
-            padding: 20px 0;
-        }
-        .review strong {
-            font-size: 1.2em;
-            color: #000;
-        }
-        .stars {
-            color: #f4b400;
-            font-size: 1.3em;
-            margin-top: 8px;
-        }
-        form {
-            margin-top: 50px;
-        }
-        input[type="text"], textarea, select {
-            width: 100%;
-            padding: 15px 18px;
-            margin-top: 12px;
-            font-size: 1.1em;
-            border-radius: 10px;
-            border: 1px solid #bbb;
-            box-sizing: border-box;
-        }
-        textarea {
-            height: 140px;
-            resize: vertical;
-        }
-        label {
-            display: block;
-            margin-top: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-        button {
-            background: #000;
-            color: white;
-            border: none;
-            padding: 16px 30px;
-            margin-top: 25px;
-            font-size: 1.2em;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background: #28a745;
-        }
+        body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: url('/static/The-Great-Wildebeest-Migration-750x450.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.container {
+    max-width: 850px;
+    margin: 50px auto;
+    background: rgba(0, 0, 0, 0.45); /* semi-transparent dark */
+    padding: 40px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+    color: #fff; /* white text */
+}
+
+input[type="text"], textarea, select {
+    width: 100%;
+    padding: 15px 18px;
+    margin-top: 12px;
+    font-size: 1.1em;
+    border-radius: 10px;
+    border: 1px solid #bbb;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.1); /* translucent input fields */
+    color: #fff;
+}
+
+textarea {
+    height: 140px;
+    resize: vertical;
+}
+
+label {
+    display: block;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #eee;
+}
+
+button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 16px 30px;
+    margin-top: 25px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #218838;
+}
+
+.review {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px 0;
+}
+
+.review strong {
+    font-size: 1.2em;
+    color: #fff;
+}
+
+.stars {
+    color: #f4b400;
+    font-size: 1.3em;
+    margin-top: 8px;
+}
+
+.avg-rating {
+    text-align: center;
+    font-size: 1.4em;
+    margin-bottom: 30px;
+    color: #00ff99;
+}
+
     </style>
 </head>
 <body>
