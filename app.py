@@ -81,12 +81,14 @@ TEMPLATE = '''
 .container {
     max-width: 850px;
     margin: 50px auto;
-    background: rgba(0, 0, 0, 0.45); /* semi-transparent dark */
+    background: transparent; /* No fill color */
     padding: 40px;
     border-radius: 14px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.3);
-    color: #fff; /* white text */
+    border: 2px solid #ffffffaa; /* White border with slight transparency */
+    box-shadow: none;
+    color: #fff;
 }
+
 
 input[type="text"], textarea, select {
     width: 100%;
