@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEB TECH</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* TRIANGULAR NEON BEAMS */
+    .beam {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform: translate(-50%, -50%) scale(1.5);
+      border-left: 200px solid transparent;
+      border-right: 200px solid transparent;
+      border-bottom: 300px solid rgba(0, 150, 255, 0.15);
+      filter: blur(8px);
+      animation: beamPulse 3s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    .beam:nth-child(2) {
+      transform: translate(-50%, -50%) rotate(180deg) scale(1.5);
+      border-bottom: 300px solid rgba(0, 150, 255, 0.1);
+      animation-delay: 1.5s;
+    }
+
+    @keyframes beamPulse {
+      0% { opacity: 0.3; transform: translate(-50%, -50%) scale(1.4); }
+      100% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.6); }
+    }
+
+    /* FLOOR CRACK EFFECT */
+    .floor {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0, 0, 50, 0.9), transparent);
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .floor::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.ibb.co/5h8GpqD/cracks-texture.png') center/cover no-repeat;
+      opacity: 0.3;
+      mix-blend-mode: lighten;
+      animation: crackPulse 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes crackPulse {
+      0% { opacity: 0.25; transform: scale(1); }
+      100% { opacity: 0.4; transform: scale(1.05); }
+    }
+
+    /* GLITCHING TEXT */
+    h1 {
+      font-size: 5rem;
+      color: #fff;
+      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #00f;
+      position: relative;
+      z-index: 2;
+      animation: pulse 2s infinite alternate;
+    }
+
+    /* PULSATING NEON GLOW */
+    @keyframes pulse {
+      0% {
+        text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #00f;
+        opacity: 0.9;
+      }
+      100% {
+        text-shadow: 0 0 10px #0ff, 0 0 30px #0ff, 0 0 60px #00f;
+        opacity: 1;
+      }
+    }
+
+    /* GLITCH LAYERS */
+    h1::before,
+    h1::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      color: #fff;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    h1::before {
+      left: 2px;
+      text-shadow: -2px 0 red;
+      animation: glitch 2s infinite linear alternate-reverse;
+    }
+
+    h1::after {
+      left: -2px;
+      text-shadow: -2px 0 blue;
+      animation: glitch 1.5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch {
+      0% { clip: rect(10px, 9999px, 60px, 0); }
+      25% { clip: rect(40px, 9999px, 80px, 0); }
+      50% { clip: rect(5px, 9999px, 45px, 0); }
+      75% { clip: rect(25px, 9999px, 70px, 0); }
+      100% { clip: rect(0, 9999px, 100px, 0); }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="beam"></div>
+  <div class="beam"></div>
+  <div class="floor"></div>
+  <h1 data-text="WEB TECH">WEB TECH</h1>
+
+  <script>
+    // Subtle shaking for text
+    const text = document.querySelector("h1");
+    setInterval(() => {
+      const x = (Math.random() * 2 - 1) * 1.5;
+      const y = (Math.random() * 2 - 1) * 1.5;
+      text.style.transform = `translate(${x}px, ${y}px)`;
+    }, 100);
+  </script>
+</body>
+</html>
